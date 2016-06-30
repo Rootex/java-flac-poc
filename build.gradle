@@ -13,6 +13,7 @@ dependencies {
     compile localGroovy()
     compile project(':jflac:jflac-codec')
     compile 'de.dfki.mary:marytts-signalproc:5.1.2'
+    compile group: 'org.jcraft', name: 'jorbis', version: '0.0.17'
     testCompile 'org.testng:testng:6.9.10'
 }
 
