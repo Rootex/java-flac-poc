@@ -40,4 +40,22 @@ class PoCTest {
         def actual = MaryAudioUtils.getSamplesAsDoubleArray(actualAIS)
         assert expected == actual
     }
+
+    @Test
+    void testDecodingGivenTimeFrame(){
+        def proc = 'sox sample2.wav sliced-expected.wav trim 0 00:05'.execute(null, tempDir)
+        proc.waitFor()
+        def expectedFile = new File("$tempDir/sliced-expected.wav")
+        def inputAudio = new File("$tempDir/sample1.flac")
+        def actualFile = new File("$tempDir/sliced-actual.wav")
+        assert expectedFile.exists()
+        def expectedAIS = AudioSystem.getAudioInputStream(expectedFile)
+        def expected = MaryAudioUtils.getSamplesAsDoubleArray(expectedAIS)
+        def poc = new PoC(inputAudio)
+        poc.decode(actualFile, 0, 5)
+        assert actualFile.exists()
+        def actual = poc.getSamples(actualFile)
+        assert actual == expected
+    }
+
 }
