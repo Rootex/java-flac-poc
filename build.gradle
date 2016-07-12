@@ -3,6 +3,7 @@ plugins {
 }
 
 apply plugin: 'application'
+apply plugin: 'idea'
 mainClassName = ""
 
 repositories {
@@ -13,7 +14,8 @@ dependencies {
     compile localGroovy()
     compile project(':jflac:jflac-codec')
     compile 'de.dfki.mary:marytts-signalproc:5.1.2'
-    compile group: 'org.jcraft', name: 'jorbis', version: '0.0.17'
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+    compile group: 'org.gagravarr', name: 'vorbis-java-core', version: '0.8'
     testCompile 'org.testng:testng:6.9.10'
 }
 

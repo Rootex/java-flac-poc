@@ -43,7 +43,7 @@ class PoCTest {
 
     @Test
     void testDecodingGivenTimeFrame(){
-        def proc = 'sox sample2.wav sliced-expected.wav trim 0 00:05'.execute(null, tempDir)
+        def proc = 'sox sample2.wav sliced-expected.wav trim 1 00:06'.execute(null, tempDir)
         proc.waitFor()
         def expectedFile = new File("$tempDir/sliced-expected.wav")
         def inputAudio = new File("$tempDir/sample1.flac")
@@ -52,10 +52,20 @@ class PoCTest {
         def expectedAIS = AudioSystem.getAudioInputStream(expectedFile)
         def expected = MaryAudioUtils.getSamplesAsDoubleArray(expectedAIS)
         def poc = new PoC(inputAudio)
-        poc.decode(actualFile, 0, 5)
+        poc.decode(actualFile, 1, 6)
         assert actualFile.exists()
         def actual = poc.getSamples(actualFile)
         assert actual == expected
+    }
+
+
+
+    @Test
+    void testOggWrappingFlac(){
+        def flacFile = new File("$tempDir/test.flac")
+        def poc = new PoC()
+        def result = poc.wrapFlacOgg(flacFile)
+        assert result == true
     }
 
 }
