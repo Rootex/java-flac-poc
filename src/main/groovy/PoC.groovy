@@ -54,6 +54,7 @@ class PoC implements PCMProcessor {
         audioIS.skip(startSecond * (int)bytespersecond)
         long samplesToCopy = secondsToCopy * format.getSampleRate()
         def newStream = new AudioInputStream(audioIS, format, samplesToCopy)
+
         return newStream
     }
 
