@@ -1,3 +1,4 @@
+import groovy.transform.Synchronized
 import groovy.util.logging.Log
 import marytts.util.data.audio.MaryAudioUtils
 import org.apache.commons.codec.EncoderException
@@ -27,6 +28,7 @@ class PoC implements PCMProcessor {
     }
     PoC(){}
 
+    @Synchronized
     def decode(File outputFile) {
         log.info("Setting up decoder")
         this.outputStream = new FileOutputStream(outputFile)
@@ -36,6 +38,7 @@ class PoC implements PCMProcessor {
         decoder.decode()
     }
 
+    @Synchronized
     def decode(File outputFile, long startSeconds, long secondsToCopy){
         log.info("Setting up decoder")
         this.outputStream = new FileOutputStream(outputFile)
@@ -45,16 +48,21 @@ class PoC implements PCMProcessor {
         decoder.decode()
     }
 
+    @Synchronized
     def getFlacSamples(long startSecond, long secondsToCopy){
         def flacAFR = new FlacAudioFileReader()
         def audioIS = flacAFR.getAudioInputStream(this.inputFile)
         def format = audioIS.getFormat()
-        def bitpersecond = format.getSampleRate() * format.getChannels() * 16
-        def bytespersecond = bitpersecond / 8
-        audioIS.skip(startSecond * (int)bytespersecond)
-        long samplesToCopy = secondsToCopy * format.getSampleRate()
-        def newStream = new AudioInputStream(audioIS, format, samplesToCopy)
-
+        def newStream
+        try {
+            def bitpersecond = format.getSampleRate() * format.getChannels() * 16
+            def bytespersecond = bitpersecond / 8
+            audioIS.skip(startSecond * (int) bytespersecond)
+            long samplesToCopy = secondsToCopy * format.getSampleRate()
+            newStream = new AudioInputStream(audioIS, format, samplesToCopy)
+        }catch (IOException e){
+            e.printStackTrace()
+        }
         return newStream
     }
 
