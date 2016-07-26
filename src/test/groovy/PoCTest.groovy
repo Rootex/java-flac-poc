@@ -40,4 +40,24 @@ class PoCTest {
         def actual = MaryAudioUtils.getSamplesAsDoubleArray(actualAIS)
         assert expected == actual
     }
+
+    @Test
+    void testDecodingSPOneTwo(){
+        def testFile = new File("$tempDir/Test.flac")
+        def sliceOne = new File("$tempDir/sliceone.wav")
+        def poc = new PoC(testFile)
+        poc.decode(sliceOne, 0, 5000)
+        assert sliceOne.exists()
+
+    }
+
+    @Test
+    void testDecodingSPStartOne(){
+        assert true
+    }
+
+    @Test
+    void testDecodingSPTwoEnd(){
+        assert true
+    }
 }
