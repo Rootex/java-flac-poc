@@ -65,15 +65,17 @@ class PoCTest {
         proc.waitFor()
         def expectedFile = new File("$tempDir/sliced-expected2.wav")
         def inputAudio = new File("$tempDir/sample1.flac")
+        def decodedFile = new File("$tempDir/decoded.wav")
         def actualFile = new File("$tempDir/sliced-actual2.wav")
         assert expectedFile.exists()
+
         def poc = new PoC(inputAudio)
+        poc.decode(decodedFile)
+        assert decodedFile.exists()
+        poc.getWavSamples(decodedFile, actualFile, 3, 7)
         def expected = poc.getSamples(expectedFile)
-        poc.decode(actualFile, 4, 8)
-        assert actualFile.exists()
         def actual = poc.getSamples(actualFile)
         assert actual == expected
-
     }
 
     @Test

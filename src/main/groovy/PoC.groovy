@@ -1,3 +1,4 @@
+import com.sun.media.sound.WaveFileWriter
 import groovy.transform.Synchronized
 import groovy.util.logging.Log
 import marytts.util.data.audio.MaryAudioUtils
@@ -10,6 +11,8 @@ import org.kc7bfi.jflac.util.ByteData
 import org.kc7bfi.jflac.util.WavWriter
 import org.gagravarr.ogg.OggPacketReader
 import org.apache.commons.codec.Encoder
+
+import javax.sound.sampled.AudioFileFormat
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 
@@ -20,6 +23,7 @@ class PoC implements PCMProcessor {
     def outputStream
     File inputFile
     WavWriter wav
+    WaveFileWriter wavSplit
 
     PoC(File inFile) {
         log.warning "$this should be loading $inputFile"
@@ -46,6 +50,26 @@ class PoC implements PCMProcessor {
         def decoder = new FLACDecoder(getFlacSamples(startSeconds, secondsToCopy))
         decoder.addPCMProcessor(this)
         decoder.decode()
+    }
+
+    def getWavSamples(File wavInFile, File wavOutFile, long startSecond, long secondsToCopy){
+        def actualAIS = AudioSystem.getAudioInputStream(wavInFile)
+        def format = actualAIS.getFormat()
+        def newStream
+        def outputStream
+        wavSplit = new WaveFileWriter()
+        try{
+            def bitpersecond = format.getSampleRate() * format.getChannels() * 16
+            def bytespersecond = bitpersecond / 8
+            actualAIS.skip(startSecond * (int) bytespersecond)
+            long samplesToCopy = secondsToCopy * format.getSampleRate()
+            newStream = new AudioInputStream(actualAIS, format, samplesToCopy)
+            outputStream = new FileOutputStream(wavOutFile)
+            wavSplit.write(newStream, AudioFileFormat.Type.WAVE, outputStream)
+        }catch (Exception e){
+            e.printStackTrace()
+        }
+        return newStream
     }
 
     @Synchronized
