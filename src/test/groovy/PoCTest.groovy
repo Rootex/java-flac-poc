@@ -1,5 +1,3 @@
-import groovy.transform.Synchronized
-import org.codehaus.groovy.runtime.powerassert.PowerAssertionError
 import org.testng.annotations.*
 import marytts.util.data.audio.MaryAudioUtils
 import javax.sound.sampled.AudioSystem
@@ -52,7 +50,7 @@ class PoCTest {
         assert expectedFile.exists()
         def poc = new PoC(inputAudio)
         def expected = poc.getSamples(expectedFile)
-        poc.decode(actualFile, 0, 4)
+        poc.decode(actualFile, 0, 3)
         assert actualFile.exists()
         def actual = poc.getSamples(actualFile)
         assert actual == expected
@@ -73,6 +71,25 @@ class PoCTest {
         poc.decode(decodedFile)
         assert decodedFile.exists()
         poc.getWavSamples(decodedFile, actualFile, 3, 7)
+        def expected = poc.getSamples(expectedFile)
+        def actual = poc.getSamples(actualFile)
+        assert actual == expected
+    }
+
+    @Test
+    void testDecodingGivenTimeFrame3(){
+        def proc = 'sox sample1.flac sliced-expected3.wav trim 7 14'.execute(null, tempDir)
+        proc.waitFor()
+        def expectedFile = new File("$tempDir/sliced-expected3.wav")
+        def inputAudio = new File("$tempDir/sample1.flac")
+        def decodedFile = new File("$tempDir/decoded.wav")
+        def actualFile = new File("$tempDir/sliced-actual3.wav")
+        assert expectedFile.exists()
+
+        def poc = new PoC(inputAudio)
+        poc.decode(decodedFile)
+        assert decodedFile.exists()
+        poc.getWavSamples(decodedFile, actualFile, 7, 14)
         def expected = poc.getSamples(expectedFile)
         def actual = poc.getSamples(actualFile)
         assert actual == expected

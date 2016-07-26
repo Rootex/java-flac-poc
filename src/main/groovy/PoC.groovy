@@ -2,15 +2,12 @@ import com.sun.media.sound.WaveFileWriter
 import groovy.transform.Synchronized
 import groovy.util.logging.Log
 import marytts.util.data.audio.MaryAudioUtils
-import org.apache.commons.codec.EncoderException
 import org.kc7bfi.jflac.FLACDecoder
 import org.kc7bfi.jflac.PCMProcessor
 import org.kc7bfi.jflac.metadata.StreamInfo
 import org.kc7bfi.jflac.sound.spi.FlacAudioFileReader
 import org.kc7bfi.jflac.util.ByteData
 import org.kc7bfi.jflac.util.WavWriter
-import org.gagravarr.ogg.OggPacketReader
-import org.apache.commons.codec.Encoder
 
 import javax.sound.sampled.AudioFileFormat
 import javax.sound.sampled.AudioInputStream
