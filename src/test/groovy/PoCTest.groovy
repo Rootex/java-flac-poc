@@ -43,28 +43,28 @@ class PoCTest {
 
     @Test
     void testDecodingSPOneTwo(){
-        def testFile = new File("$tempDir/Test.flac")
+        def testFile = new File("$tempDir/Test-1.flac")
         def sliceOne = new File("$tempDir/sliceone.wav")
         def poc = new PoC(testFile)
         poc.decode(sliceOne, 1, 2)
-        assert sliceOne.exists()
+        assert sliceOne.canRead()
     }
 
     @Test
     void testDecodingSPStartOne(){
-        def testFile = new File("$tempDir/Test.flac")
-        def sliceOne = new File("$tempDir/sliceone.wav")
+        def testFile = new File("$tempDir/Test-1.flac")
+        def sliceTwo = new File("$tempDir/slicetwo.wav")
         def poc = new PoC(testFile)
-        poc.decode(sliceOne, 0, 1)
-        assert sliceOne.exists()
+        poc.decode(sliceTwo, 0, 1)
+        assert sliceTwo.canRead()
     }
 
     @Test
     void testDecodingSPTwoEnd(){
-        def testFile = new File("$tempDir/Test.flac")
-        def sliceOne = new File("$tempDir/sliceone.wav")
+        def testFile = new File("$tempDir/Test-1.flac")
+        def sliceThree = new File("$tempDir/slicethree.wav")
         def poc = new PoC(testFile)
-        poc.decode(sliceOne, 2, 3)
-        assert sliceOne.exists()
+        poc.decode(sliceThree, 2, 3)
+        assert sliceThree.canRead()
     }
 }

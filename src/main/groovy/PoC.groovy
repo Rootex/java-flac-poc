@@ -9,7 +9,6 @@ import org.kc7bfi.jflac.metadata.Metadata
 import org.kc7bfi.jflac.metadata.SeekPoint
 import org.kc7bfi.jflac.metadata.SeekTable
 import org.kc7bfi.jflac.metadata.StreamInfo
-import org.kc7bfi.jflac.sound.spi.FlacAudioFileReader
 import org.kc7bfi.jflac.util.ByteData
 import org.kc7bfi.jflac.util.WavWriter
 import javax.sound.sampled.AudioSystem
@@ -47,6 +46,7 @@ class PoC implements PCMProcessor, FrameListener{
         decoder.readMetadata()
 
         if(seekTable == null){
+            log.warning "$this Seektable is null."
             return
         }
 
