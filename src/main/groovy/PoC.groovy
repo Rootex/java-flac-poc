@@ -4,6 +4,7 @@ import org.kc7bfi.jflac.FLACDecoder
 import org.kc7bfi.jflac.FrameListener
 import org.kc7bfi.jflac.PCMProcessor
 import org.kc7bfi.jflac.frame.Frame
+import org.kc7bfi.jflac.io.RandomFileInputStream
 import org.kc7bfi.jflac.metadata.Metadata
 import org.kc7bfi.jflac.metadata.SeekPoint
 import org.kc7bfi.jflac.metadata.SeekTable
@@ -22,23 +23,22 @@ class PoC implements PCMProcessor, FrameListener{
 
     PoC(File inputFile) {
         log.warning "$this should be loading $inputFile"
-        this.inputStream = new FileInputStream(inputFile)
+        this.inputStream = new RandomFileInputStream(inputFile)
     }
 
     def decode(File outputFile) {
         log.info("Setting up decoder")
-        this.outputStream = new FileOutputStream(outputFile)
+        this.outputStream = new RandomFileInputStream(outputFile)
         this.wav = new WavWriter(outputStream)
         def decoder = new FLACDecoder(this.inputStream)
         decoder.addPCMProcessor(this)
         decoder.decode()
     }
 
-    def decode(File outputfile, long fromSamples, long toSamples, long fromOffset, long toOffset,
-               int fromFramesamples, int toFramesamples) {
+    def decode(File outputfile, int seekpoinFrom, int seekpointTo) {
         log.info("Setting up decoder")
         this.outputStream = new FileOutputStream(outputfile)
-        this.wav = new WavWriter(outputStream)
+        this.wav = new WavWriter(this.outputStream)
         def decoder = new FLACDecoder(this.inputStream)
         decoder.addPCMProcessor(this)
         decoder.addFrameListener(this)
@@ -51,14 +51,17 @@ class PoC implements PCMProcessor, FrameListener{
         //TODO Either create seekpoints depending on the samples, offset or by number of seekpoints.
         SeekPoint from
         SeekPoint to
-        if(fromSamples >=0 && fromSamples <= decoder.getStreamInfo().getTotalSamples()) {
-            from = new SeekPoint(fromSamples, fromOffset, fromFramesamples)
+        if(seekpoinFrom <= seekTable.numberOfPoints() + 1) {
+            from = new SeekPoint(seekTable.getSeekPoint(seekpoinFrom).sampleNumber,
+                    seekTable.getSeekPoint(seekpoinFrom).streamOffset,
+                    seekTable.getSeekPoint(seekpoinFrom).frameSamples)
         }
 
-        if(toSamples >=0 && toSamples <= decoder.getStreamInfo().getTotalSamples()) {
-            to = new SeekPoint(toSamples, toOffset, toFramesamples)
+        if(seekpoinFrom <= seekTable.numberOfPoints() + 1 ) {
+            to = new SeekPoint(seekTable.getSeekPoint(seekpointTo).sampleNumber,
+                    seekTable.getSeekPoint(seekpointTo).streamOffset,
+                    seekTable.getSeekPoint(seekpointTo).frameSamples)
         }
-
 
         decoder.decode(from, to)
     }
@@ -108,6 +111,6 @@ class Main{
         def test = new File("$tempDir/src/test/resources/Test.flac")
         def output = new File("$tempDir/src/test/resources/TestOut.wav")
         def poc = new PoC(test)
-        poc.decode(output, 0, 5000, 124, 8327, 65608, 65608)
+        poc.decode(output, 0, 1)
     }
 }
