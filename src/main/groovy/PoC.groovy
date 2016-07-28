@@ -34,7 +34,8 @@ class PoC implements PCMProcessor, FrameListener{
         decoder.decode()
     }
 
-    def decode(File outputfile, long fromSamples, long toSamples) {
+    def decode(File outputfile, long fromSamples, long toSamples, long fromOffset, long toOffset,
+               int fromFramesamples, int toFramesamples) {
         log.info("Setting up decoder")
         this.outputStream = new FileOutputStream(outputfile)
         this.wav = new WavWriter(outputStream)
@@ -49,13 +50,17 @@ class PoC implements PCMProcessor, FrameListener{
 
         //TODO Either create seekpoints depending on the samples, offset or by number of seekpoints.
         SeekPoint from
-        if(fromSamples <= 0){
-            from = null
-        }else{
-            //TODO Find a way to extract the samples in a frame, offset in bytes
-            from = new SeekPoint()
+        SeekPoint to
+        if(fromSamples >=0 && fromSamples <= decoder.getStreamInfo().getTotalSamples()) {
+            from = new SeekPoint(fromSamples, fromOffset, fromFramesamples)
         }
-        decoder.decode()
+
+        if(toSamples >=0 && toSamples <= decoder.getStreamInfo().getTotalSamples()) {
+            to = new SeekPoint(toSamples, toOffset, toFramesamples)
+        }
+
+
+        decoder.decode(from, to)
     }
 
     double[] getSamples(File outputFile) {
@@ -93,5 +98,16 @@ class PoC implements PCMProcessor, FrameListener{
 
     void processError(String msg){
         log.warning "$this Error" + msg
+    }
+}
+
+
+class Main{
+    def static tempDir = new File(System.getProperty('user.dir'))
+    static void main(String[] args){
+        def test = new File("$tempDir/src/test/resources/Test.flac")
+        def output = new File("$tempDir/src/test/resources/TestOut.wav")
+        def poc = new PoC(test)
+        poc.decode(output, 0, 5000, 124, 8327, 65608, 65608)
     }
 }
