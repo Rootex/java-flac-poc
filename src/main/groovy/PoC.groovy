@@ -103,14 +103,3 @@ class PoC implements PCMProcessor, FrameListener{
         log.warning "$this Error" + msg
     }
 }
-
-
-class Main{
-    def static tempDir = new File(System.getProperty('user.dir'))
-    static void main(String[] args){
-        def test = new File("$tempDir/src/test/resources/Test.flac")
-        def output = new File("$tempDir/src/test/resources/TestOut.wav")
-        def poc = new PoC(test)
-        poc.decode(output, 0, 1)
-    }
-}

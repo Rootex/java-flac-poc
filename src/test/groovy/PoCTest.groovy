@@ -46,7 +46,7 @@ class PoCTest {
         def testFile = new File("$tempDir/Test.flac")
         def sliceOne = new File("$tempDir/sliceone.wav")
         def poc = new PoC(testFile)
-        poc.decode(sliceOne, 5000, 13000)
+        poc.decode(sliceOne, 1, 2)
         assert sliceOne.exists()
     }
 
@@ -55,7 +55,7 @@ class PoCTest {
         def testFile = new File("$tempDir/Test.flac")
         def sliceOne = new File("$tempDir/sliceone.wav")
         def poc = new PoC(testFile)
-        poc.decode(sliceOne, 0, 5000)
+        poc.decode(sliceOne, 0, 1)
         assert sliceOne.exists()
     }
 
@@ -64,7 +64,7 @@ class PoCTest {
         def testFile = new File("$tempDir/Test.flac")
         def sliceOne = new File("$tempDir/sliceone.wav")
         def poc = new PoC(testFile)
-        poc.decode(sliceOne, 13000, 16000)
+        poc.decode(sliceOne, 2, 3)
         assert sliceOne.exists()
     }
 }
