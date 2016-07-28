@@ -17,18 +17,20 @@ import javax.sound.sampled.AudioSystem
 @Log
 class PoC implements PCMProcessor, FrameListener{
     def inputStream
+    def randomInputstream
     def outputStream
     WavWriter wav
     SeekTable seekTable
 
     PoC(File inputFile) {
         log.warning "$this should be loading $inputFile"
-        this.inputStream = new RandomFileInputStream(inputFile)
+        this.inputStream = new FileInputStream(inputFile)
+        this.randomInputstream = new RandomFileInputStream(inputFile)
     }
 
     def decode(File outputFile) {
         log.info("Setting up decoder")
-        this.outputStream = new RandomFileInputStream(outputFile)
+        this.outputStream = new FileOutputStream(outputFile)
         this.wav = new WavWriter(outputStream)
         def decoder = new FLACDecoder(this.inputStream)
         decoder.addPCMProcessor(this)
@@ -39,7 +41,7 @@ class PoC implements PCMProcessor, FrameListener{
         log.info("Setting up decoder")
         this.outputStream = new FileOutputStream(outputfile)
         this.wav = new WavWriter(this.outputStream)
-        def decoder = new FLACDecoder(this.inputStream)
+        def decoder = new FLACDecoder(this.randomInputstream)
         decoder.addPCMProcessor(this)
         decoder.addFrameListener(this)
         decoder.readMetadata()
@@ -48,7 +50,7 @@ class PoC implements PCMProcessor, FrameListener{
             return
         }
 
-        //TODO Either create seekpoints depending on the samples, offset or by number of seekpoints.
+        //
         SeekPoint from
         SeekPoint to
         if(seekpoinFrom <= seekTable.numberOfPoints() + 1) {
